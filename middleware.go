@@ -39,8 +39,10 @@ func MakeAuthzMiddleware(baseUrl string) Middleware {
 				w.Write([]byte(err.Error()))
 			}
 
-			if res.StatusCode == http.StatusOK {
+			if res.StatusCode == http.StatusNoContent {
 				handler.ServeHTTP(w, r)
+			} else {
+				w.WriteHeader(http.StatusForbidden)
 			}
 		})
 	}
@@ -79,6 +81,8 @@ func MakePenmanshipDataMiddleware(baseUrl string) Middleware {
 				r = r.WithContext(context.WithValue(r.Context(), CTXKeyPenmanshipEncryption, string(data)))
 
 				handler.ServeHTTP(w, r)
+			} else {
+				w.WriteHeader(http.StatusForbidden)
 			}
 		})
 	}
